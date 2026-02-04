@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS Cafetería - Panel Táctil</title>
+    <title>POS Snoopy Cafetería</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        /* Paleta de colores de Snoopy */
         :root {
-            --color1: #A6635D; --color2: #73464A; --color3: #D9C3B0;
-            --color4: #D9A38F; --color5: #261010; --white: #ffffff;
+            --snoopy-white: #FFFAEC; /* Crema / Fondo principal */
+            --snoopy-red: #E64C3C;   /* Rojo de la caseta de Snoopy */
+            --snoopy-blue: #4A90E2;  /* Azul cielo */
+            --snoopy-black: #261010; /* Negro profundo */
+            --snoopy-yellow: #F7D75E; /* Amarillo soleado */
+            --snoopy-light-grey: #D8D8D8; /* Gris claro para bordes */
+            --snoopy-dark-grey: #6B6B6B; /* Gris oscuro para texto secundario */
+            --snoopy-brown: #7A5B49; /* Para algunos detalles */
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0; padding: 20px; color: var(--color5);
-            background: linear-gradient(rgba(38, 16, 16, 0.8), rgba(38, 16, 16, 0.8)),
-                        url('https://i.pinimg.com/originals/05/91/92/05919280f6867011d8d85f8c85c37805.jpg') center/cover fixed;
+            font-family: 'Comic Sans MS', 'Segoe UI', sans-serif; /* Fuente un poco más juguetona */
+            margin: 0; padding: 20px;
+            color: var(--snoopy-black);
+            background: var(--snoopy-light-grey);
+            /* Fondo con huellas de perro */
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ccc' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
         }
 
         .container {
@@ -24,224 +34,349 @@
         }
 
         section {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            background: var(--snoopy-white);
+            padding: 25px; border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border: 2px solid var(--snoopy-light-grey);
         }
+
+        h2 {
+            color: var(--snoopy-brown);
+            font-size: 1.8em;
+            margin-top: 0; margin-bottom: 20px;
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--snoopy-yellow);
+            border-radius: 12px;
+            border-bottom: 3px solid var(--snoopy-red);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Encabezado Snoopy */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background-color: var(--snoopy-yellow);
+            padding: 15px 30px;
+            border-radius: 30px;
+            max-width: 400px;
+            margin: 20px auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        header img {
+            max-width: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--snoopy-red);
+        }
+        header h1 {
+            color: var(--snoopy-black);
+            font-size: 2.2em;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
 
         /* Selector de Mesa Superior */
         .table-selector {
-            background: var(--color2); color: white;
-            padding: 15px; border-radius: 12px; margin-bottom: 20px;
+            background: var(--snoopy-red); color: var(--snoopy-white);
+            padding: 15px; border-radius: 15px; margin-bottom: 20px;
             display: flex; align-items: center; justify-content: center; gap: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-size: 1.1em;
+            border: 2px solid var(--snoopy-black);
         }
         .table-selector input {
-            width: 80px; padding: 10px; font-size: 1.2em; border-radius: 8px; border: none; text-align: center;
+            width: 70px; padding: 8px; font-size: 1.1em; border-radius: 8px; border: none; text-align: center;
+            background: var(--snoopy-white);
+            color: var(--snoopy-black);
+        }
+        .table-selector span {
+            font-size: 0.9em;
+            opacity: 0.9;
         }
 
         /* Grid de Menú */
         .menu-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;
         }
 
         .item-card {
-            background: var(--white); border: 2px solid var(--color3);
-            border-radius: 12px; padding: 15px; display: flex; flex-direction: column; transition: 0.2s;
+            background: var(--snoopy-white);
+            border-radius: 15px; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 3px solid var(--snoopy-light-grey); /* Borde por defecto */
+        }
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }
 
-        .item-name { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; height: 40px; }
+        /* Bordes de color para las tarjetas */
+        .item-card.coffee { border-color: var(--snoopy-red); }
+        .item-card.drink { border-color: var(--snoopy-blue); }
+        .item-card.frappe { border-color: var(--snoopy-brown); } /* Nuevo color para frappes */
+        .item-card.dessert { border-color: var(--snoopy-yellow); }
+
+        .item-card svg {
+            width: 60px; height: 60px;
+            margin-bottom: 10px;
+        }
+        /* Colores de los iconos */
+        .item-card.coffee svg { fill: var(--snoopy-red); }
+        .item-card.drink svg { fill: var(--snoopy-blue); }
+        .item-card.frappe svg { fill: var(--snoopy-brown); }
+        .item-card.dessert svg { fill: var(--snoopy-yellow); }
+
+        .item-name {
+            font-weight: bold; font-size: 1.2em;
+            margin-bottom: 8px;
+            color: var(--snoopy-black);
+        }
+        .item-description {
+            font-size: 0.9em;
+            color: var(--snoopy-dark-grey);
+            margin-bottom: 15px;
+        }
 
         /* Botones de Tamaño */
-        .size-group { display: flex; gap: 5px; margin-bottom: 10px; }
-        .btn-size {
-            flex: 1; padding: 8px 2px; border: 1px solid var(--color4);
-            background: white; border-radius: 6px; cursor: pointer; font-size: 0.8em;
+        .size-group {
+            display: flex; gap: 8px; margin-bottom: 15px;
+            background-color: var(--snoopy-light-grey);
+            border-radius: 8px;
+            padding: 5px;
         }
-        .btn-size.active { background: var(--color4); color: white; font-weight: bold; }
-
-        /* Contadores */
+        .btn-size {
+            flex: 1; padding: 8px 5px; border: none;
+            background: var(--snoopy-white); color: var(--snoopy-black);
+            border-radius: 6px; cursor: pointer; font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn-size.active {
+            background: var(--snoopy-blue); /* Activo en azul */
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        /* Botones de cantidad */
         .qty-controls {
             display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;
         }
         .btn-qty {
-            width: 35px; height: 35px; border-radius: 50%; border: none;
-            background: var(--color3); color: var(--color5); font-size: 1.2em; cursor: pointer;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background: var(--snoopy-red); color: white; font-size: 1.6em; cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+        }
+        .btn-qty:hover {
+            background: var(--snoopy-black);
+        }
+        .qty-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--snoopy-black);
         }
 
         .price-display {
-            font-size: 1.3em; font-weight: bold; color: var(--color2);
-            text-align: center; margin-bottom: 10px;
+            font-size: 1.6em; font-weight: bold; color: var(--snoopy-red);
+            text-align: center; margin-bottom: 15px;
+            background-color: var(--snoopy-yellow);
+            padding: 5px 10px;
+            border-radius: 8px;
         }
 
         .btn-add {
-            background: var(--color2); color: white; border: none;
+            background: var(--snoopy-blue); color: white; border: none;
             padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, transform 0.1s;
         }
-        .btn-add:active { transform: scale(0.95); }
+        .btn-add:active { transform: scale(0.98); background: var(--snoopy-black); }
 
         /* Tabla de pedidos */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: var(--color2); color: white; padding: 10px; font-size: 0.9em; }
-        td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .orders-section {
+            background: var(--snoopy-white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border: 2px solid var(--snoopy-red); /* Borde rojo para la sección de pedidos */
+        }
 
-        .status { padding: 4px 8px; border-radius: 10px; font-size: 0.75em; font-weight: bold; }
-        .pedido { background: #ffebee; color: #c62828; }
-        .espera { background: #e3f2fd; color: #1565c0; }
-        .entregado { background: #e8f5e9; color: #2e7d32; }
+        .orders-section h2 {
+            background-color: var(--snoopy-red);
+            color: var(--snoopy-white);
+            border-bottom: none;
+        }
+
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: var(--snoopy-blue); color: white; padding: 12px; font-size: 0.9em; text-align: left;}
+        td { padding: 12px; border-bottom: 1px solid var(--snoopy-light-grey); text-align: left; vertical-align: middle; }
+
+        .status { padding: 6px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; text-align: center; display: inline-block;}
+        .pedido { background: #fee2e2; color: #ef4444; } /* Rojo claro */
+        .en_espera { background: #e0f2fe; color: #2563eb; } /* Azul claro */
+        .entregado { background: #dcfce7; color: #22c55e; } /* Verde claro */
+
+        .btn-status-action {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: none; background: var(--snoopy-yellow); color: var(--snoopy-black);
+            font-size: 1.4em; cursor: pointer; font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+        }
+        .btn-status-action:hover {
+            background: var(--snoopy-red);
+            color: white;
+        }
+
 
         .btn-excel {
-            background: #2e7d32; color: white; width: 100%; padding: 15px;
-            border: none; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer;
+            background: var(--snoopy-black); color: var(--snoopy-white);
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            font-weight: bold; margin-top: 20px; cursor: pointer;
+            font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn-excel:hover {
+            background: var(--snoopy-brown);
+        }
+        .btn-excel:active { transform: scale(0.98); }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
+<header>
+    <img src="https://i.ibb.co/L5k6pQZ/snoopy-head.png" alt="Logo Snoopy"> <h1>POS Snoopy</h1>
+</header>
+
 <div class="table-selector">
-    <label><strong>MESA ACTUAL:</strong></label>
+    <label>MESA ACTUAL:</label>
     <input type="number" id="global-table" value="1" min="1">
-    <span>(Selecciona la mesa antes de agregar productos)</span>
+    <span>(Selecciona la mesa antes de agregar un producto)</span>
 </div>
 
 <div class="container">
     <section>
-        <h2 style="margin-top:0">☕ Menú</h2>
+        <h2>Menú</h2>
         <div class="menu-grid" id="menu-container"></div>
     </section>
 
-    <section>
-        <h2 style="margin-top:0">📝 Comanda</h2>
+    <section class="orders-section">
+        <h2>Comanda</h2>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Mesa</th>
-                        <th>Prod</th>
+                        <th>Cant.</th>
+                        <th>Producto</th>
                         <th>Total</th>
                         <th>Estado</th>
-                        <th>Ok</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="orders-body"></tbody>
             </table>
         </div>
-        <button class="btn-excel" onclick="exportToExcel()">📊 Exportar Reporte Excel</button>
+        <button class="btn-excel" onclick="exportToExcel()">Exportar Reporte Excel</button>
     </section>
 </div>
 
 <script>
+    // URL de una imagen de Snoopy (ejemplo, puedes cambiarla)
+    // Es mejor que subas una imagen a un servicio como ImgBB y uses esa URL
+    const SNOOPY_LOGO_URL = "https://i.ibb.co/L5k6pQZ/snoopy-head.png"; 
+
+    // Define los tipos de productos para asignar colores e íconos
+    const PRODUCT_TYPES = {
+        COFFEE: 'coffee',
+        DRINK: 'drink',
+        FRAPPE: 'frappe',
+        DESSERT: 'dessert'
+    };
+
     const menuData = [
-        { n: "Espresso", p: 35 }, { n: "Americano", p: 40 }, { n: "Cappuccino", p: 55 },
-        { n: "Latte Art", p: 58 }, { n: "Moca Blanco", p: 65 }, { n: "Frappé Oreo", p: 75 },
-        { n: "Cold Brew", p: 60 }, { n: "Macchiato", p: 45 }, { n: "Flat White", p: 55 },
-        { n: "Cheesecake", p: 65 }, { n: "Tiramisú", p: 75 }, { n: "Brownie", p: 50 },
-        { n: "Croissant", p: 45 }, { n: "Pay de Limón", p: 55 }, { n: "Alfajores", p: 35 }
-    ];
-
-    const sizes = [{l:"Chico", m:1}, {l:"Medio", m:1.25}, {l:"Grd", m:1.5}];
-    let orders = [];
-    let config = menuData.map(() => ({ sizeIdx: 0, qty: 1 }));
-
-    function init() {
-        const container = document.getElementById('menu-container');
-        container.innerHTML = menuData.map((item, i) => `
-            <div class="item-card">
-                <div class="item-name">${item.n}</div>
-                
-                <div class="size-group">
-                    ${sizes.map((s, si) => `
-                        <button class="btn-size ${si===0?'active':''}" 
-                                id="size-${i}-${si}" 
-                                onclick="setSize(${i}, ${si})">${s.l}</button>
-                    `).join('')}
-                </div>
-
-                <div class="qty-controls">
-                    <button class="btn-qty" onclick="changeQty(${i}, -1)">-</button>
-                    <strong id="qty-val-${i}">1</strong>
-                    <button class="btn-qty" onclick="changeQty(${i}, 1)">+</button>
-                </div>
-
-                <div class="price-display" id="price-${i}">$${item.p.toFixed(2)}</div>
-                
-                <button class="btn-add" onclick="addOrder(${i})">AGREGAR</button>
-            </div>
-        `).join('');
-    }
-
-    function setSize(itemIdx, sizeIdx) {
-        config[itemIdx].sizeIdx = sizeIdx;
-        // Actualizar UI de botones
-        for(let si=0; si<sizes.length; si++) {
-            document.getElementById(`size-${itemIdx}-${si}`).classList.toggle('active', si === sizeIdx);
-        }
-        updatePrice(itemIdx);
-    }
-
-    function changeQty(itemIdx, delta) {
-        config[itemIdx].qty = Math.max(1, config[itemIdx].qty + delta);
-        document.getElementById(`qty-val-${itemIdx}`).innerText = config[itemIdx].qty;
-        updatePrice(itemIdx);
-    }
-
-    function updatePrice(i) {
-        const subtotal = (menuData[i].p * sizes[config[i].sizeIdx].m) * config[i].qty;
-        document.getElementById(`price-${i}`).innerText = `$${subtotal.toFixed(2)}`;
-    }
-
-    function addOrder(i) {
-        const mesa = document.getElementById('global-table').value;
-        const c = config[i];
-        const subtotal = (menuData[i].p * sizes[c.sizeIdx].m) * c.qty;
-
-        const order = {
-            ID: Date.now().toString().slice(-5),
-            Mesa: mesa,
-            Cantidad: c.qty,
-            Producto: `${menuData[i].n} (${sizes[c.sizeIdx].l})`,
-            Total: subtotal.toFixed(2),
-            Estado: 'Pedido',
-            Hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-        };
-
-        orders.push(order);
-        render();
-        
-        // Reset local del card para evitar errores de dedos
-        config[i].qty = 1;
-        document.getElementById(`qty-val-${i}`).innerText = "1";
-        updatePrice(i);
-    }
-
-    function render() {
-        const b = document.getElementById('orders-body');
-        b.innerHTML = orders.slice().reverse().map(o => `
-            <tr>
-                <td><strong>#${o.Mesa}</strong></td>
-                <td style="font-size:0.85em">${o.Cantidad}x ${o.Producto}</td>
-                <td style="font-weight:bold">$${o.Total}</td>
-                <td><span class="status ${o.Estado.toLowerCase().replace(/ /g, '')}">${o.Estado}</span></td>
-                <td><button style="cursor:pointer; border:none; background:none; font-size:1.2em" onclick="step('${o.ID}')">✅</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function step(id) {
-        const o = orders.find(x => x.ID === id);
-        if(o.Estado === 'Pedido') o.Estado = 'En Espera';
-        else if(o.Estado === 'En Espera') o.Estado = 'Entregado';
-        else return; // Ya entregado
-        render();
-    }
-
-    function exportToExcel() {
-        if(!orders.length) return alert("No hay pedidos.");
-        const ws = XLSX.utils.json_to_sheet(orders);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Ventas");
-        XLSX.writeFile(wb, `Cafeteria_Reporte.xlsx`);
-    }
-
-    init();
-</script>
-</body>
-</html>
+        { n: "Espresso", p: 35, type: PRODUCT_TYPES.COFFEE, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 8H5C3.34315 8 2 9.34315 2 11V15C2 16.6569 3.34315 18 5 18H19C20.6569 18 22 16.6569 22 15V11C22 9.34315 20.6569 8 19 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8V6C7 4.89543 7.89543 4 9 4H15C16.1046 4 17 4.89543 17 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 8V6C16 5.44772 16.4477 5 17 5H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Americano", p: 40, type: PRODUCT_TYPES.COFFEE, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 8H5C3.34315 8 2 9.34315 2 11V15C2 16.6569 3.34315 18 5 18H19C20.6569 18 22 16.6569 22 15V11C22 9.34315 20.6569 8 19 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8V6C7 4.89543 7.89543 4 9 4H15C16.1046 4 17 4.89543 17 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 8V6C16 5.44772 16.4477 5 17 5H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Cappuccino", p: 55, type: PRODUCT_TYPES.COFFEE, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 8H5C3.34315 8 2 9.34315 2 11V15C2 16.6569 3.34315 18 5 18H19C20.6569 18 22 16.6569 22 15V11C22 9.34315 20.6569 8 19 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8V6C7 4.89543 7.89543 4 9 4H15C16.1046 4 17 4.89543 17 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 8V6C16 5.44772 16.4477 5 17 5H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Latte Art", p: 58, type: PRODUCT_TYPES.COFFEE, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 8H5C3.34315 8 2 9.34315 2 11V15C2 16.6569 3.34315 18 5 18H19C20.6569 18 22 16.6569 22 15V11C22 9.34315 20.6569 8 19 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8V6C7 4.89543 7.89543 4 9 4H15C16.1046 4 17 4.89543 17 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 8V6C16 5.44772 16.4477 5 17 5H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Moca Blanco", p: 65, type: PRODUCT_TYPES.DRINK, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 13C6 15.7614 8.23858 18 11 18H13C15.7614 18 18 15.7614 18 13C18 10.2386 15.7614 8 13 8H11C8.23858 8 6 10.2386 6 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18 13C18 15.7614 15.7614 18 13 18H11C8.23858 18 6 15.7614 6 13C6 10.2386 8.23858 8 11 8H13C15.7614 8 18 10.2386 18 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 13C22 15.7614 19.7614 18 17 18H15C12.2386 18 10 15.7614 10 13C10 10.2386 12.2386 8 15 8H17C19.7614 8 22 10.2386 22 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Frappé Oreo", p: 75, type: PRODUCT_TYPES.FRAPPE, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 2L10 12L17 12L20 2H7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 12V20C9 21.1046 9.89543 22 11 22H16C17.1046 22 18 21.1046 18 20V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 2C12 2 10.5 5 8.5 5C6.5 5 5 2 5 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Cold Brew", p: 60, type: PRODUCT_TYPES.DRINK, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 13C6 15.7614 8.23858 18 11 18H13C15.7614 18 18 15.7614 18 13C18 10.2386 15.7614 8 13 8H11C8.23858 8 6 10.2386 6 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18 13C18 15.7614 15.7614 18 13 18H11C8.23858 18 6 15.7614 6 13C6 10.2386 8.23858 8 11 8H13C15.7614 8 18 10.2386 18 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 13C22 15.7614 19.7614 18 17 18H15C12.2386 18 10 15.7614 10 13C10 10.2386 12.2386 8 15 8H17C19.7614 8 22 10.2386 22 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Cheesecake", p: 65, type: PRODUCT_TYPES.DESSERT, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8C20.7614 8 23 10.2386 23 13C23 15.7614 20.7614 18 18 18C15.2386 18 13 15.7614 13 13C13 10.2386 15.2386 8 18 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 13C6 15.7614 8.23858 18 11 18H13C15.7614 18 18 15.7614 18 13C18 10.2386 15.7614 8 13 8H11C8.23858 8 6 10.2386 6 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M11 8V6C11 4.89543 11.8954 4 13 4H15C16.1046 4 17 4.89543 17 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Tiramisú", p: 75, type: PRODUCT_TYPES.DESSERT, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8C20.7614 8 23 10.2386 23 13C23 15.7614 20.7614 18 18 18C15.2386 18 13 15.7614 13 13C13 10.2386 15.2386 8 18 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 13C6 15.7614 8.23858 18 11 18H13C15.7614 18 18 15.7614 18 13C18 10.2386 15.7614 8 13 8H11C8.23858 8 6 10.2386 6 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M11 8V6C11 4.89543 11.8954 4 13 4H15C16.1046 4 17 4.89543 17 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`
+        },
+        { n: "Brownie Especial", p: 50, type: PRODUCT_TYPES.DESSERT, icon: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8C20.7614 8 23 10.2386 23 13C23 15.7614 20.7
