@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Cafetería - Panel Táctil</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --color1: #A6635D; --color2: #73464A; --color3: #D9C3B0;
+            --color4: #D9A38F; --color5: #261010; --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px; color: var(--color5);
+            background: linear-gradient(rgba(38, 16, 16, 0.8), rgba(38, 16, 16, 0.8)),
+                        url('https://i.pinimg.com/originals/05/91/92/05919280f6867011d8d85f8c85c37805.jpg') center/cover fixed;
+        }
+
+        .container {
+            max-width: 1400px; margin: 0 auto;
+            display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px;
+        }
+
+        section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Selector de Mesa Superior */
+        .table-selector {
+            background: var(--color2); color: white;
+            padding: 15px; border-radius: 12px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+        }
+        .table-selector input {
+            width: 80px; padding: 10px; font-size: 1.2em; border-radius: 8px; border: none; text-align: center;
+        }
+
+        /* Grid de Menú */
+        .menu-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;
+        }
+
+        .item-card {
+            background: var(--white); border: 2px solid var(--color3);
+            border-radius: 12px; padding: 15px; display: flex; flex-direction: column; transition: 0.2s;
+        }
+
+        .item-name { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; height: 40px; }
+
+        /* Botones de Tamaño */
+        .size-group { display: flex; gap: 5px; margin-bottom: 10px; }
+        .btn-size {
+            flex: 1; padding: 8px 2px; border: 1px solid var(--color4);
+            background: white; border-radius: 6px; cursor: pointer; font-size: 0.8em;
+        }
+        .btn-size.active { background: var(--color4); color: white; font-weight: bold; }
+
+        /* Contadores */
+        .qty-controls {
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;
+        }
+        .btn-qty {
+            width: 35px; height: 35px; border-radius: 50%; border: none;
+            background: var(--color3); color: var(--color5); font-size: 1.2em; cursor: pointer;
+        }
+
+        .price-display {
+            font-size: 1.3em; font-weight: bold; color: var(--color2);
+            text-align: center; margin-bottom: 10px;
+        }
+
+        .btn-add {
+            background: var(--color2); color: white; border: none;
+            padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;
+        }
+        .btn-add:active { transform: scale(0.95); }
+
+        /* Tabla de pedidos */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: var(--color2); color: white; padding: 10px; font-size: 0.9em; }
+        td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+
+        .status { padding: 4px 8px; border-radius: 10px; font-size: 0.75em; font-weight: bold; }
+        .pedido { background: #ffebee; color: #c62828; }
+        .espera { background: #e3f2fd; color: #1565c0; }
+        .entregado { background: #e8f5e9; color: #2e7d32; }
+
+        .btn-excel {
+            background: #2e7d32; color: white; width: 100%; padding: 15px;
+            border: none; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="table-selector">
+    <label><strong>MESA ACTUAL:</strong></label>
+    <input type="number" id="global-table" value="1" min="1">
+    <span>(Selecciona la mesa antes de agregar productos)</span>
+</div>
+
+<div class="container">
+    <section>
+        <h2 style="margin-top:0">☕ Menú</h2>
+        <div class="menu-grid" id="menu-container"></div>
+    </section>
+
+    <section>
+        <h2 style="margin-top:0">📝 Comanda</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mesa</th>
+                        <th>Prod</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Ok</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-body"></tbody>
+            </table>
+        </div>
+        <button class="btn-excel" onclick="exportToExcel()">📊 Exportar Reporte Excel</button>
+    </section>
+</div>
+
+<script>
+    const menuData = [
+        { n: "Espresso", p: 35 }, { n: "Americano", p: 40 }, { n: "Cappuccino", p: 55 },
+        { n: "Latte Art", p: 58 }, { n: "Moca Blanco", p: 65 }, { n: "Frappé Oreo", p: 75 },
+        { n: "Cold Brew", p: 60 }, { n: "Macchiato", p: 45 }, { n: "Flat White", p: 55 },
+        { n: "Cheesecake", p: 65 }, { n: "Tiramisú", p: 75 }, { n: "Brownie", p: 50 },
+        { n: "Croissant", p: 45 }, { n: "Pay de Limón", p: 55 }, { n: "Alfajores", p: 35 }
+    ];
+
+    const sizes = [{l:"Chico", m:1}, {l:"Medio", m:1.25}, {l:"Grd", m:1.5}];
+    let orders = [];
+    let config = menuData.map(() => ({ sizeIdx: 0, qty: 1 }));
+
+    function init() {
+        const container = document.getElementById('menu-container');
+        container.innerHTML = menuData.map((item, i) => `
+            <div class="item-card">
+                <div class="item-name">${item.n}</div>
+                
+                <div class="size-group">
+                    ${sizes.map((s, si) => `
+                        <button class="btn-size ${si===0?'active':''}" 
+                                id="size-${i}-${si}" 
+                                onclick="setSize(${i}, ${si})">${s.l}</button>
+                    `).join('')}
+                </div>
+
+                <div class="qty-controls">
+                    <button class="btn-qty" onclick="changeQty(${i}, -1)">-</button>
+                    <strong id="qty-val-${i}">1</strong>
+                    <button class="btn-qty" onclick="changeQty(${i}, 1)">+</button>
+                </div>
+
+                <div class="price-display" id="price-${i}">$${item.p.toFixed(2)}</div>
+                
+                <button class="btn-add" onclick="addOrder(${i})">AGREGAR</button>
+            </div>
+        `).join('');
+    }
+
+    function setSize(itemIdx, sizeIdx) {
+        config[itemIdx].sizeIdx = sizeIdx;
+        // Actualizar UI de botones
+        for(let si=0; si<sizes.length; si++) {
+            document.getElementById(`size-${itemIdx}-${si}`).classList.toggle('active', si === sizeIdx);
+        }
+        updatePrice(itemIdx);
+    }
+
+    function changeQty(itemIdx, delta) {
+        config[itemIdx].qty = Math.max(1, config[itemIdx].qty + delta);
+        document.getElementById(`qty-val-${itemIdx}`).innerText = config[itemIdx].qty;
+        updatePrice(itemIdx);
+    }
+
+    function updatePrice(i) {
+        const subtotal = (menuData[i].p * sizes[config[i].sizeIdx].m) * config[i].qty;
+        document.getElementById(`price-${i}`).innerText = `$${subtotal.toFixed(2)}`;
+    }
+
+    function addOrder(i) {
+        const mesa = document.getElementById('global-table').value;
+        const c = config[i];
+        const subtotal = (menuData[i].p * sizes[c.sizeIdx].m) * c.qty;
+
+        const order = {
+            ID: Date.now().toString().slice(-5),
+            Mesa: mesa,
+            Cantidad: c.qty,
+            Producto: `${menuData[i].n} (${sizes[c.sizeIdx].l})`,
+            Total: subtotal.toFixed(2),
+            Estado: 'Pedido',
+            Hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        };
+
+        orders.push(order);
+        render();
+        
+        // Reset local del card para evitar errores de dedos
+        config[i].qty = 1;
+        document.getElementById(`qty-val-${i}`).innerText = "1";
+        updatePrice(i);
+    }
+
+    function render() {
+        const b = document.getElementById('orders-body');
+        b.innerHTML = orders.slice().reverse().map(o => `
+            <tr>
+                <td><strong>#${o.Mesa}</strong></td>
+                <td style="font-size:0.85em">${o.Cantidad}x ${o.Producto}</td>
+                <td style="font-weight:bold">$${o.Total}</td>
+                <td><span class="status ${o.Estado.toLowerCase().replace(/ /g, '')}">${o.Estado}</span></td>
+                <td><button style="cursor:pointer; border:none; background:none; font-size:1.2em" onclick="step('${o.ID}')">✅</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function step(id) {
+        const o = orders.find(x => x.ID === id);
+        if(o.Estado === 'Pedido') o.Estado = 'En Espera';
+        else if(o.Estado === 'En Espera') o.Estado = 'Entregado';
+        else return; // Ya entregado
+        render();
+    }
+
+    function exportToExcel() {
+        if(!orders.length) return alert("No hay pedidos.");
+        const ws = XLSX.utils.json_to_sheet(orders);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Ventas");
+        XLSX.writeFile(wb, `Cafeteria_Reporte.xlsx`);
+    }
+
+    init();
+</script>
+</body>
+</html>
